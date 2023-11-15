@@ -1,0 +1,146 @@
+#!/bin/sh
+
+# Launching stuff
+super + Return
+  st fish
+
+super + e
+ pcmanfm
+
+super + s
+  $BROWSER
+
+# Dmenu stuff
+super + d
+  dmenu_desktop
+
+super + shift + d
+  dmenu_run
+
+Pause
+  power-menu
+
+super + Menu
+  mount-drive
+
+super + shift + e
+  emoji-selector
+
+# Running custom scripts/tools
+alt + {equal, minus, BackSpace}
+  volume {up, down, mute}
+
+{F2, F3, F4}
+  volume {down, up, mute}
+
+super + p
+  colorpicker
+
+alt + Shift_L
+  layout
+
+super + control + d
+  date "+%Y %b %d %a, %I:%M%p" | xclip -selection clipboard
+
+Scroll_Lock
+  betterlockscreen -l
+
+# Screenshot stuff
+Print
+  sshot -n -f -x
+
+super + Print
+  sshot -s -c -n
+
+super + shift + Print
+  sshot -s -f -x -n
+
+# Launching Umess date
+super + z
+  (date "+%Y %b %d %a, %I:%M:%S %p"; sleep 1) | umess -bl -f "Blex Mono Nerd Font:size=16" -F "#e0e0e0" -B "#000000"
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+# bspwm independent hotkeys
+
+# make sxhkd reload its configuration files:
+super + Escape
+	pkill -USR1 -x sxhkd
+
+# bspwm hotkeys
+
+# quit/restart bspwm
+super + shift + {q,r}
+	bspc {quit,wm -r}
+
+# close and kill
+super + q
+	bspc node -c
+
+# alternate between the tiled and monocle layout
+super + m
+	bspc desktop -l next
+
+# Switch to tiled
+super + t
+  bspc node -t tiled
+
+# Toggle fullscreen
+super + f 
+  bspc node -t '~fullscreen'
+
+# Toggle floating
+super + w
+    if [ -z "$(bspc query -N -n focused.floating)" ]; then \
+        bspc node focused -t floating; \
+    else \
+        bspc node focused -t tiled; \
+    fi
+
+### focus/swap/resize/move
+
+# swap windows with arrows
+super + alt { Left, Down, Up, Right }
+        bspc node -s {west,south,north,east}
+
+# expand/contract a window 
+super + shift + {Left,Down,Up,Right}
+  bspc node -z {left -20 0 || bspc node -z right -20 0, \
+                bottom 0 20 || bspc node -z top 0 20,\
+                top 0 -20 || bspc node -z bottom 0 -20,\
+                right 20 0 || bspc node -z left 20 0}
+
+# resize a floating window
+super + ctrl + {Left,Down,Up,Right}
+	bspc node -v {-20 0,0 20,0 -20,20 0}
+
+# focus the node in the given direction
+super + {Left,Down,Up,Right}
+	bspc node -f {west,south,north,east}
+
+# focus the node for the given path jump
+super + {p,b,comma,period}
+	bspc node -f @{parent,brother,first,second}
+
+# focus the next/previous window in the current desktop
+super + {_,shift + }c
+	bspc node -f {next,prev}.local.!hidden.window
+
+# focus the next/previous desktop in the current monitor
+super + bracket{left,right}
+	bspc desktop -f {prev,next}.local
+
+# focus the last node/desktop
+super + {grave,Tab}
+	bspc {node,desktop} -f last
+
+# focus the older or newer node in the focus history
+super + {o,i}
+	bspc wm -h off; \
+	bspc node {older,newer} -f; \
+	bspc wm -h on
+
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
+
